@@ -1,0 +1,5 @@
+# Ignore all files in the build directory
+build/*
+
+# Except for the GenomeAssembler executable
+!build/GenomeAssembler
