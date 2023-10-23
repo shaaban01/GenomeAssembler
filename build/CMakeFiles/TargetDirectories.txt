@@ -1,0 +1,3 @@
+/home/chaaban/code/CMPS/297/GenomeAssembler/build/CMakeFiles/GenomeAssembler.dir
+/home/chaaban/code/CMPS/297/GenomeAssembler/build/CMakeFiles/edit_cache.dir
+/home/chaaban/code/CMPS/297/GenomeAssembler/build/CMakeFiles/rebuild_cache.dir
