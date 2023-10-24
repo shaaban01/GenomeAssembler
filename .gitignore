@@ -3,3 +3,5 @@ build/*
 
 # Except for the GenomeAssembler executable
 !build/GenomeAssembler
+!build/GenomeAssemblerTests
+
