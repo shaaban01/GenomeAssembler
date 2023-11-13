@@ -21,9 +21,9 @@ public:
     }
 
     // Returns the set of all nodes in the de Bruijn graph.
-    const std::unordered_set<std::string> &GetNodes() const
+    std::unordered_set<std::string> GetNodes() const
     {
-        static std::unordered_set<std::string> nodes;
+        std::unordered_set<std::string> nodes;
         for (const auto &entry : graph_)
         {
             nodes.insert(entry.first);
@@ -48,7 +48,7 @@ public:
         {
             if (entry.second.find(node) != entry.second.end())
             {
-                inDegree++;
+                ++inDegree;
             }
         }
         return inDegree;
@@ -139,6 +139,7 @@ public:
     std::vector<std::string> GenerateContigs(const std::vector<std::string> &eulerianPath, int k)
     {
         // TODO:: Implement this function
+        return {};
     }
 
 private:
