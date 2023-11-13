@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 class DeBruijnGraph
 {
@@ -138,8 +139,16 @@ public:
 
     std::vector<std::string> GenerateContigs(const std::vector<std::string> &eulerianPath, int k)
     {
-        // TODO:: Implement this function
-        return {};
+        std::vector<std::string> contigs;
+        contigs.push_back(eulerianPath[0]);
+        for (int p = 1; p < eulerianPath.size(); ++p)
+        {
+            if (eulerianPath[p].substr(0, k - 2) == eulerianPath[p - 1].substr(1, k - 1))
+                contigs[contigs.size()-1] += eulerianPath[p][k - 2];
+            else
+                contigs.push_back(eulerianPath[p]);
+        }
+        return contigs;
     }
 
 private:
