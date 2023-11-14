@@ -7,150 +7,94 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <stack>
+#include <memory>
+#include "../include/kmerifier.h"
 
+/**
+ * @brief A class representing a De Bruijn graph.
+ *
+ * This class represents a De Bruijn graph, which is a directed graph used in
+ * sequence assembly. It is constructed from a set of k-mers, and can be used
+ * to generate contigs and perform an Eulerian walk.
+ */
 class DeBruijnGraph
 {
 public:
-    DeBruijnGraph(const std::unordered_set<std::string> &kmers)
-    {
-        for (const auto &kmer : kmers)
-        {
-            std::string prefix = kmer.substr(0, kmer.size() - 1);
-            std::string suffix = kmer.substr(1);
-            graph_[prefix].insert(suffix);
-        }
-    }
+    /**
+     * @brief Default constructor for DeBruijnGraph.
+     */
+    DeBruijnGraph();
 
-    // Returns the set of all nodes in the de Bruijn graph.
-    std::unordered_set<std::string> GetNodes() const
-    {
-        std::unordered_set<std::string> nodes;
-        for (const auto &entry : graph_)
-        {
-            nodes.insert(entry.first);
-            for (const auto &edge : entry.second)
-            {
-                nodes.insert(edge);
-            }
-        }
-        return nodes;
-    }
+    /**
+     * @brief Constructor for DeBruijnGraph.
+     *
+     * @param kmf A KMerifier object used to generate k-mers.
+     */
+    DeBruijnGraph(KMerifier kmf);
 
-    // Returns the set of all outgoing edges from a given node.
-    const std::unordered_set<std::string> &GetOutgoingEdges(const std::string &node) const
-    {
-        return graph_.at(node);
-    }
+    /**
+     * @brief Connects the last node to the first node in the graph.
+     */
+    void connectLastAndFirst();
 
-    int GetInDegree(const std::string &node) const
-    {
-        int inDegree = 0;
-        for (const auto &entry : graph_)
-        {
-            if (entry.second.find(node) != entry.second.end())
-            {
-                ++inDegree;
-            }
-        }
-        return inDegree;
-    }
+    /**
+     * @brief Adds an edge to the graph.
+     *
+     * @param from The starting node of the edge.
+     * @param to The ending node of the edge.
+     */
+    void addEdge(const std::string &from, const std::string &to);
 
-    int GetOutDegree(const std::string &node) const
-    {
-        return graph_.at(node).size();
-    }
+    /**
+     * @brief Adds a node to the graph.
+     *
+     * @param node The node to be added.
+     */
+    void addNode(const std::string &node);
 
-    std::string FindStartNode() const
-    {
-        std::string startNode;
-        for (const auto &node : GetNodes())
-        {
-            if (GetOutDegree(node) - GetInDegree(node) == 1)
-            {
-                return node;
-            }
-            if (GetOutDegree(node) > 0)
-            {
-                startNode = node;
-            }
-        }
-        return startNode;
-    }
+    /**
+     * @brief Checks if the graph contains a given node.
+     *
+     * @param node The node to check for.
+     * @return True if the graph contains the node, false otherwise.
+     */
+    bool contains(const std::string &node);
 
-    std::vector<std::string> FindEulerianPath()
-    {
-        std::unordered_map<std::string, std::unordered_set<std::string>> localGraph = graph_;
-        std::vector<std::string> path, stack;
-        stack.push_back(FindStartNode());
+    /**
+     * @brief Counts the number of edges in the graph.
+     */
+    void countEdges();
 
-        while (!stack.empty())
-        {
-            std::string v = stack.back();
-            if (localGraph[v].empty())
-            {
-                path.push_back(v);
-                stack.pop_back();
-            }
-            else
-            {
-                std::string w = *localGraph[v].begin();
-                stack.push_back(w);
-                localGraph[v].erase(w);
-            }
-        }
-        std::reverse(path.begin(), path.end());
-        return path;
-    }
+    /**
+     * @brief Creates the De Bruijn graph.
+     */
+    void createGraph();
 
-    bool IsValidEulerianPath() const
-    {
-        int startNodes = 0, endNodes = 0;
-        for (const auto &node : GetNodes())
-        {
-            int outMinusIn = GetOutDegree(node) - GetInDegree(node);
-            if (outMinusIn > 1 || outMinusIn < -1)
-            {
-                return false;
-            }
-            if (outMinusIn == 1)
-            {
-                startNodes++;
-            }
-            else if (outMinusIn == -1)
-            {
-                endNodes++;
-            }
-        }
-        return (startNodes == 0 && endNodes == 0) || (startNodes == 1 && endNodes == 1);
-    }
+    /**
+     * @brief Generates contigs from an Eulerian path.
+     *
+     * @param eulerianPath The Eulerian path to generate contigs from.
+     * @param k The length of the k-mers used to generate the graph.
+     * @return A vector of contigs.
+     */
+    std::vector<std::string> GenerateContigs(const std::vector<std::string> &eulerianPath, int k);
 
-    void printGraph()
-    {
-        for (const auto &[node, edgeList] : graph_)
-        {
-            std::cout << node << " -> ";
-            for (const auto &edge : edgeList)
-            {
-                std::cout << edge << ",";
-            }
-            std::cout << std::endl;
-        }
-    }
+    /**
+     * @brief Prints the De Bruijn graph.
+     */
+    void printGraph();
 
-    std::vector<std::string> GenerateContigs(const std::vector<std::string> &eulerianPath, int k)
-    {
-        std::vector<std::string> contigs;
-        contigs.push_back(eulerianPath[0]);
-        for (int p = 1; p < eulerianPath.size(); ++p)
-        {
-            if (eulerianPath[p].substr(0, k - 2) == eulerianPath[p - 1].substr(1, k - 1))
-                contigs[contigs.size()-1] += eulerianPath[p][k - 2];
-            else
-                contigs.push_back(eulerianPath[p]);
-        }
-        return contigs;
-    }
+    /**
+     * @brief Performs an Eulerian walk on the graph.
+     *
+     * @return The Eulerian walk as a string.
+     */
+    std::string DoEulerianWalk();
 
 private:
-    std::unordered_map<std::string, std::unordered_set<std::string>> graph_;
+    std::unordered_map<std::string, std::vector<std::string>> graph_; /**< The graph represented as an unordered map. */
+    std::unordered_map<int, std::string> nodes;                       /**< The nodes in the graph represented as an unordered map. */
+    std::unordered_map<std::string, int> edgeCounts;                  /**< The number of edges for each node represented as an unordered map. */
+    std::unique_ptr<KMerifier> kmf_;                                  /**< A unique pointer to a KMerifier object used to generate k-mers. */
 };
