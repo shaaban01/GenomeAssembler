@@ -92,7 +92,17 @@ public:
      */
     std::string DoEulerianWalk();
 
-private:
+    /**
+     * @brief Gets graph_.
+     */
+    std::unordered_map<std::string, std::vector<std::string>> getGraph_();
+
+    /**
+     * @brief Gets edgeCounts.
+     */
+    std::unordered_map<std::string, int> getEdgeCounts();
+
+public:
     std::unordered_map<std::string, std::vector<std::string>> graph_; /**< The graph represented as an unordered map. */
     std::unordered_map<int, std::string> nodes;                       /**< The nodes in the graph represented as an unordered map. */
     std::unordered_map<std::string, int> edgeCounts;                  /**< The number of edges for each node represented as an unordered map. */

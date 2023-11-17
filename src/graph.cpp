@@ -203,3 +203,8 @@ std::string DeBruijnGraph::DoEulerianWalk()
 
     return original;
 }
+
+std::unordered_map<std::string, std::vector<std::string>> DeBruijnGraph::getGraph_()
+{
+    return graph_;
+}

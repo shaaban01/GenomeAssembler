@@ -1,4 +1,5 @@
 #include "../include/kmerifier.h"
+#include <iostream>
 
 KMerifier::KMerifier() : k_mer_size_(0) {}
 
@@ -33,7 +34,6 @@ std::unordered_map<int, std::string> KMerifier::GetKmersMinusOneMers()
     std::unordered_map<int, std::string> kmers;
     std::unordered_map<int, std::string> k_1_mers;
     kmers = GetKmers();
-
     for (int i = 0; i < kmers.size(); i++)
     {
         std::string km = kmers[i];

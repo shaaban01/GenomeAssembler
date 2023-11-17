@@ -6,7 +6,7 @@
 int main()
 {
     auto start = std::chrono::high_resolution_clock::now(); // start timer
-    KMerifier kmerifier(5);
+    KMerifier kmerifier(4);
     std::vector<std::string> reads = {"AAGATTCTCTAAGA"};
     kmerifier.TransformReadsToKmers(reads);
     DeBruijnGraph graph(kmerifier);
