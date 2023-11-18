@@ -10,7 +10,7 @@ project(GenomeAssembler)
 set(CMAKE_CXX_STANDARD 20)
 
 # Add source files to the project
-add_executable(GenomeAssembler src/main.cpp src/kmerifier.cpp src/graph.cpp)
+add_executable(GenomeAssembler src/main.cpp src/kmerifier.cpp src/graph.cpp src/preproccessing.cpp)
 
 add_executable(GenomeAssemblerTests tests/test_main.cpp)
 
