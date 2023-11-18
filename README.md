@@ -1,4 +1,5 @@
 # first create a folder named "files" and paste in in the reads.txt and reference.txt
+
 # De Bruijn Genome Assembler
 
 This is a De Bruijn genome assembler written in C++. It is still under development
@@ -30,3 +31,6 @@ build the project using:
 then run
 
 `./GenomeAssemblerTests`
+
+`sudo apt-get install valgrind` to install valgrind on ubuntu
+

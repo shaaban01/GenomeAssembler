@@ -44,14 +44,14 @@ public:
      * @param from The starting node of the edge.
      * @param to The ending node of the edge.
      */
-    void addEdge(const std::string &from, const std::string &to);
+    void addEdge(const std::string_view &from, const std::string_view &to);
 
     /**
      * @brief Adds a node to the graph.
      *
      * @param node The node to be added.
      */
-    void addNode(const std::string &node);
+    void addNode(const std::string_view &node);
 
     /**
      * @brief Checks if the graph contains a given node.
@@ -59,7 +59,7 @@ public:
      * @param node The node to check for.
      * @return True if the graph contains the node, false otherwise.
      */
-    bool contains(const std::string &node);
+    bool contains(const std::string_view &node);
 
     /**
      * @brief Counts the number of edges in the graph.
@@ -93,8 +93,8 @@ public:
     std::string DoEulerianWalk();
 
 private:
-    std::unordered_map<std::string, std::vector<std::string>> graph_; /**< The graph represented as an unordered map. */
-    std::unordered_map<int, std::string> nodes;                       /**< The nodes in the graph represented as an unordered map. */
-    std::unordered_map<std::string, int> edgeCounts;                  /**< The number of edges for each node represented as an unordered map. */
-    std::unique_ptr<KMerifier> kmf_;                                  /**< A unique pointer to a KMerifier object used to generate k-mers. */
+    std::unordered_map<std::string_view, std::vector<std::string_view>> graph_; /**< The graph represented as an unordered map. */
+    std::unordered_map<int, std::string_view> nodes;                            /**< The nodes in the graph represented as an unordered map. */
+    std::unordered_map<std::string_view, int> edgeCounts;                       /**< The number of edges for each node represented as an unordered map. */
+    std::unique_ptr<KMerifier> kmf_;                                            /**< A unique pointer to a KMerifier object used to generate k-mers. */
 };

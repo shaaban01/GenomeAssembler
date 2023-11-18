@@ -2,12 +2,19 @@
 
 std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &filename)
 {
+
     std::ifstream inputFile(filename);
+
+    constexpr size_t BUFFER_SIZE = 512 * 1024;
+    char buffer[BUFFER_SIZE];
+
+    inputFile.rdbuf()->pubsetbuf(buffer, BUFFER_SIZE);
 
     // Check if the file is opened successfully
     if (!inputFile.is_open())
     {
-        std::cerr << "Error opening the file." << std::endl;
+        std::cerr << "Error opening the file."
+                  << "\n";
         return {{}, 0}; // Return an empty vector and 0 length
     }
 
@@ -19,7 +26,7 @@ std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &file
         const int genomeLength = firstGenomeRead.length();
 
         // Display the length of the genome
-        std::cout << "Genome Length: " << genomeLength << std::endl;
+        std::cout << "Genome Length: " << genomeLength << "\n";
 
         // Reset the file pointer to the beginning of the file for subsequent reads
         inputFile.clear();
@@ -38,7 +45,8 @@ std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &file
             }
             else
             {
-                std::cerr << "Error: Genome read does not have the expected length." << std::endl;
+                std::cerr << "Error: Genome read does not have the expected length."
+                          << "\n";
                 // You might want to handle this error case differently based on your requirements
             }
         }
@@ -51,7 +59,8 @@ std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &file
     }
     else
     {
-        std::cerr << "Error: Unable to read the first genome read." << std::endl;
+        std::cerr << "Error: Unable to read the first genome read."
+                  << "\n";
         // Close the file
         inputFile.close();
         return {{}, 0}; // Return an empty vector and 0 length
@@ -63,8 +72,8 @@ void processGenomeReads(const std::vector<std::string> &genomeReads, int k)
     // Process or use the genome reads as needed
     for (const auto &read : genomeReads)
     {
-        std::cout << "Genome Read: " << read << std::endl;
+        std::cout << "Genome Read: " << read << "\n";
     }
 
-    std::cout << "Length of each read (k): " << k << std::endl;
+    std::cout << "Length of each read (k): " << k << "\n";
 }
