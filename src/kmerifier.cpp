@@ -1,8 +1,14 @@
 #include "../include/kmerifier.h"
 
-KMerifier::KMerifier() : k_mer_size_(0) {}
+KMerifier::KMerifier() : k_mer_size_(0)
+{
+    kmer_vec_.reserve(1000000);
+}
 
-KMerifier::KMerifier(int k_mer_size) : k_mer_size_(k_mer_size) {}
+KMerifier::KMerifier(int k_mer_size) : k_mer_size_(k_mer_size)
+{
+    kmer_vec_.reserve(1000000);
+}
 
 int KMerifier::GetKmerSize() const
 {
@@ -11,51 +17,44 @@ int KMerifier::GetKmerSize() const
 
 void KMerifier::TransformReadsToKmers(const std::vector<std::string> &reads)
 {
-    int kmer_index = 0;
-    for (const auto &read : reads)
+    for (int r = 0; r < reads.size(); ++r)
     {
+        const auto &read = reads[r];
+
         for (int i = 0; i < read.size() - k_mer_size_ + 1; ++i)
         {
-            std::string kmer = read.substr(i, k_mer_size_);
-            kmer_map_[kmer_index] = kmer;
-            ++kmer_index;
+            // substring fromm i to size
+            std::string_view kmer = std::string_view(read).substr(i, k_mer_size_);
+            kmer_vec_.emplace_back(kmer);
         }
     }
 }
 
-const std::unordered_map<int, std::string> KMerifier::GetKmers() const
+std::vector<std::string_view> KMerifier::GetKmers() const
 {
-    return kmer_map_;
+    return kmer_vec_;
 }
 
-std::unordered_map<int, std::string> KMerifier::GetKmersMinusOneMers()
+std::vector<std::string_view> KMerifier::GetKmersMinusOneMers()
 {
-    std::unordered_map<int, std::string> kmers;
-    std::unordered_map<int, std::string> k_1_mers;
-    kmers = GetKmers();
+    std::vector<std::string_view> k_1_mers;
+    k_1_mers.reserve(2 * kmer_vec_.size());
 
-    for (int i = 0; i < kmers.size(); i++)
+    for (int i = 0; i < kmer_vec_.size(); i++)
     {
-        std::string km = kmers[i];
-        k_1_mers[2 * i] = km.substr(0, k_mer_size_ - 1);
-        k_1_mers[2 * i + 1] = km.substr(1, k_mer_size_ - 1);
+        std::string_view km = kmer_vec_[i];
+        k_1_mers.emplace_back(km.substr(0, k_mer_size_ - 1));
+        k_1_mers.emplace_back(km.substr(1, k_mer_size_ - 1));
     }
     return k_1_mers;
 }
 
-std::unordered_set<std::string> KMerifier::GetUniqueKMinusOneMers()
+std::unordered_set<std::string_view> KMerifier::GetUniqueKMinusOneMers()
 {
-    std::unordered_map<int, std::string> kmers;
-    std::unordered_map<int, std::string> k_1_mers;
-    std::unordered_set<std::string> unique_k_1_mers;
-    kmers = GetKmers();
+    std::vector<std::string_view> k_1_mers;
+    std::unordered_set<std::string_view> unique_k_1_mers;
 
-    for (int i = 0; i < kmers.size(); i++)
-    {
-        std::string km = kmers[i];
-        k_1_mers[2 * i] = km.substr(0, k_mer_size_ - 1);
-        k_1_mers[2 * i + 1] = km.substr(1, k_mer_size_ - 1);
-    }
+    k_1_mers = GetKmersMinusOneMers();
 
     for (int i = 0; i < k_1_mers.size(); i++)
     {

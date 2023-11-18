@@ -10,24 +10,24 @@ DeBruijnGraph::DeBruijnGraph(KMerifier kmf)
 
 void DeBruijnGraph::connectLastAndFirst()
 {
-    // connects the last node with the first node
-    std::string lastNode = nodes[nodes.size() - 1];
-    std::string firstNode = nodes[0];
+    // connects the last node with the first nodes
+    std::string_view lastNode = nodes[nodes.size() - 1];
+    std::string_view firstNode = nodes[0];
 
     addEdge(lastNode, firstNode);
 }
 
-void DeBruijnGraph::addEdge(const std::string &from, const std::string &to)
+void DeBruijnGraph::addEdge(const std::string_view &from, const std::string_view &to)
 {
     graph_[from].push_back(to);
 }
 
-void DeBruijnGraph::addNode(const std::string &node)
+void DeBruijnGraph::addNode(const std::string_view &node)
 {
     graph_[node] = {};
 }
 
-bool DeBruijnGraph::contains(const std::string &node)
+bool DeBruijnGraph::contains(const std::string_view &node)
 {
     return graph_.find(node) != graph_.end();
 }
@@ -45,7 +45,7 @@ void DeBruijnGraph::createGraph()
     int nodesInserted = 0;
     int edgesInserted = 0;
 
-    std::unordered_map<int, std::string> k_1_mers = kmf_->GetKmersMinusOneMers();
+    std::vector<std::string_view> k_1_mers = kmf_->GetKmersMinusOneMers();
 
     for (int i = 0; i < k_1_mers.size(); i++)
     {
@@ -119,11 +119,11 @@ std::string DeBruijnGraph::DoEulerianWalk()
     connectLastAndFirst();
 
     // Create temporary copies of the graph and edge counts
-    std::unordered_map<std::string, std::vector<std::string>> adjListTemp = graph_;
+    std::unordered_map<std::string_view, std::vector<std::string_view>> adjListTemp = graph_;
 
     countEdges();
 
-    std::unordered_map<std::string, int> edgeCountsTemp = edgeCounts;
+    std::unordered_map<std::string_view, int> edgeCountsTemp = edgeCounts;
 
     // If the graph is empty, return an empty string
     if (adjListTemp.size() == 0)
@@ -133,12 +133,12 @@ std::string DeBruijnGraph::DoEulerianWalk()
     }
 
     // Use a stack to backtrack and a vector to store the final circuit
-    std::stack<std::string> currPath;
-    std::vector<std::string> circuit;
+    std::stack<std::string_view> currPath;
+    std::vector<std::string_view> circuit;
 
     // Start from the first node
     currPath.push(nodes[0]);
-    std::string currNode = nodes[0];
+    std::string_view currNode = nodes[0];
 
     // Perform the Eulerian walk
     while (!currPath.empty())
@@ -149,7 +149,7 @@ std::string DeBruijnGraph::DoEulerianWalk()
             currPath.push(currNode);
 
             // Get the next node to traverse
-            std::string nextNode = adjListTemp[currNode].back();
+            std::string_view nextNode = adjListTemp[currNode].back();
 
             // Decrement the edge count for the current node
             edgeCountsTemp[currNode]--;
@@ -186,12 +186,12 @@ std::string DeBruijnGraph::DoEulerianWalk()
     for (int i = 1; i < (circuit.size() - 1); i++)
     {
         // Check if there is an overlap between the previous and current node
-        std::string right_prev = std::string(circuit[i - 1].begin() + 1, circuit[i - 1].end());
-        std::string left_curr = std::string(circuit[i].begin(), circuit[i].end() - 1);
+        std::string_view right_prev = std::string(circuit[i - 1].begin() + 1, circuit[i - 1].end());
+        std::string_view left_curr = std::string(circuit[i].begin(), circuit[i].end() - 1);
         if ((k - 1 > 1) && (right_prev == left_curr))
         {
             // If there is an overlap, append the last character only
-            std::string curr = circuit[i];
+            std::string_view curr = circuit[i];
             original += curr[curr.size() - 1];
         }
         else
