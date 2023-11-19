@@ -2,7 +2,7 @@
 
 # De Bruijn Genome Assembler
 
-This is a De Bruijn genome assembler written in C++. It is still under development
+This is a De Bruijn genome assembler written in C++. It takes in a file of reads return the assembled genome into data/output.txt
 
 ## To Compile and Run
 
@@ -12,7 +12,7 @@ This is a De Bruijn genome assembler written in C++. It is still under developme
 
 `make`
 
-`./GenomeAssembler`
+`./GenomeAssembler </path/to/reads>`
 
 ## For Testing
 
@@ -31,6 +31,3 @@ build the project using:
 then run
 
 `./GenomeAssemblerTests`
-
-`sudo apt-get install valgrind` to install valgrind on ubuntu
-
