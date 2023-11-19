@@ -4,10 +4,10 @@
 #include "../include/graph.h"
 #include "../include/preprocessing.h"
 
-int main()
+int main(int argc, char *argv[])
 {
 
-    std::string filename = "../data/reads.txt";
+    std::string filename = argv[1];
 
     // Read genome reads from the file
     auto startReading = std::chrono::high_resolution_clock::now(); // start timer for file reading
@@ -21,6 +21,8 @@ int main()
     // Process the genome reads
     std::cout << "Done reading\n";
 
+    k = (k > 11) ? k - 5 : k;
+
     auto durationReading = std::chrono::duration_cast<std::chrono::microseconds>(endReading - startReading); // calculate duration for file reading in microseconds
 
     auto start = std::chrono::high_resolution_clock::now(); // start timer for processing
@@ -28,7 +30,10 @@ int main()
     std::cout << k << "-merifier created \n";
     kmerifier.TransformReadsToKmers(genomeReads);
     DeBruijnGraph graph(kmerifier);
-    std::cout << "Eulerian path: " << graph.DoEulerianWalk() << "\n";
+
+    std::ofstream outputFile;
+    outputFile.open("../data/output.txt");
+    outputFile << graph.DoEulerianWalk();
     auto end = std::chrono::high_resolution_clock::now(); // end timer for processing
 
     auto durationProcessing = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // calculate duration for processing in microseconds
