@@ -19,7 +19,7 @@ void DeBruijnGraph::connectLastAndFirst()
 
 void DeBruijnGraph::addEdge(const std::string_view &from, const std::string_view &to)
 {
-    graph_[from].push_back(to);
+    graph_[from].emplace_back(to);
 }
 
 void DeBruijnGraph::addNode(const std::string_view &node)
@@ -32,21 +32,22 @@ bool DeBruijnGraph::contains(const std::string_view &node)
     return graph_.find(node) != graph_.end();
 }
 
+#pragma omp declare reduction(merge : std::unordered_map<std::string_view, int> : omp_out.insert(omp_in.begin(), omp_in.end()))
 void DeBruijnGraph::countEdges()
 {
     for (const auto &[node, edgeList] : graph_)
     {
-        edgeCounts[node] = edgeList.size();
+        edgeCounts.emplace(node, edgeList.size());
     }
 }
 
+#pragma omp declare reduction(merge : std::vector<std::string_view> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 void DeBruijnGraph::createGraph()
 {
     int nodesInserted = 0;
     int edgesInserted = 0;
 
     std::vector<std::string_view> k_1_mers = kmf_->GetKmersMinusOneMers();
-
     for (int i = 0; i < k_1_mers.size(); i++)
     {
         if (!(contains(k_1_mers[i])))
@@ -84,16 +85,17 @@ void DeBruijnGraph::createGraph()
     }
 }
 
+#pragma omp declare reduction(merge : std::vector<std::string> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 std::vector<std::string> DeBruijnGraph::GenerateContigs(const std::vector<std::string> &eulerianPath, int k)
 {
     std::vector<std::string> contigs;
-    contigs.push_back(eulerianPath[0]);
+    contigs.emplace_back(eulerianPath[0]);
     for (int p = 1; p < eulerianPath.size(); ++p)
     {
         if (eulerianPath[p].substr(0, k - 2) == eulerianPath[p - 1].substr(1, k - 1))
             contigs[contigs.size() - 1] += eulerianPath[p][k - 2];
         else
-            contigs.push_back(eulerianPath[p]);
+            contigs.emplace_back(eulerianPath[p]);
     }
     return contigs;
 }
@@ -111,6 +113,7 @@ void DeBruijnGraph::printGraph()
     }
 }
 
+#pragma omp declare reduction(merge : std::string : omp_out += omp_in)
 std::string DeBruijnGraph::DoEulerianWalk()
 {
     std::string original = "";
@@ -165,7 +168,7 @@ std::string DeBruijnGraph::DoEulerianWalk()
         // add it to the final circuit and backtrack
         else
         {
-            circuit.push_back(currNode);
+            circuit.emplace_back(currNode);
 
             // Backtrack to the previous node
             currNode = currPath.top();
@@ -174,7 +177,7 @@ std::string DeBruijnGraph::DoEulerianWalk()
     }
 
     // Reverse the circuit to get the correct order
-    reverse(circuit.begin(), circuit.end());
+    std::reverse(circuit.begin(), circuit.end());
 
     // --- Restoration of the original string ---
 

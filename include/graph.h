@@ -9,6 +9,7 @@
 #include <map>
 #include <stack>
 #include <memory>
+#include <omp.h>
 #include "../include/kmerifier.h"
 
 /**

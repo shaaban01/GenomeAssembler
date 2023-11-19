@@ -1,5 +1,7 @@
 #include "../include/preprocessing.h"
+#include <omp.h>
 
+#pragma omp declare reduction(merge : std::vector<std::string> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &filename)
 {
 

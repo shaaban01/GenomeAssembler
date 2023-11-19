@@ -1,1 +1,0 @@
-// Define the data structures and algorithms for contig generation.
