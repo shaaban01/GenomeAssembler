@@ -25,7 +25,7 @@ std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &file
     if (std::getline(inputFile, firstGenomeRead))
     {
         // Get the length of the genome from the first read
-        const int genomeLength = firstGenomeRead.length();
+        int genomeLength = firstGenomeRead.length();
 
         // Display the length of the genome
         std::cout << "Genome Length: " << genomeLength << "\n";
@@ -39,18 +39,11 @@ std::pair<std::vector<std::string>, int> readGenomeReads(const std::string &file
         std::string genomeRead;
         while (std::getline(inputFile, genomeRead))
         {
-            // Check if the read has the expected length
-            if (genomeRead.length() == genomeLength)
+            if (genomeRead.length() < genomeLength)
             {
-                // Store the genome read in the vector
-                genomeReads.push_back(genomeRead);
+                genomeLength = genomeRead.length();
             }
-            else
-            {
-                std::cerr << "Error: Genome read does not have the expected length."
-                          << "\n";
-                // You might want to handle this error case differently based on your requirements
-            }
+            genomeReads.push_back(genomeRead);
         }
 
         // Close the file
